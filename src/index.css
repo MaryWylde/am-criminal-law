@@ -1,0 +1,411 @@
+/* Latin structured-data face (numbers, labels, body in GTA mode) — NO Armenian glyphs */
+@import '@fontsource/jetbrains-mono/400.css';
+@import '@fontsource/jetbrains-mono/500.css';
+@import '@fontsource/jetbrains-mono/600.css';
+@import '@fontsource/jetbrains-mono/700.css';
+/* Armenian face — ALL Armenian text. Verified full hy coverage. */
+@import '@fontsource/noto-sans-armenian/400.css';
+@import '@fontsource/noto-sans-armenian/500.css';
+@import '@fontsource/noto-sans-armenian/700.css';
+@import '@fontsource/noto-sans-armenian/800.css';
+/* GTA display faces (both OFL). Bowlby One is the open-source stand-in for
+   Pricedown; UnifrakturMaguntia is the blackletter subtitle. Latin only. */
+@import '@fontsource/bowlby-one/400.css';
+@import '@fontsource/unifrakturmaguntia/400.css';
+/* Cyber-brutalist display face for the REGULAR skin (OFL). Wide, extended. */
+@import '@fontsource/syncopate/700.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ---------------------------------------------------------------------------
+   Theme tokens. Components only ever use these semantic names; the two skins
+   below just swap the values. `data-theme` lives on <html>.
+   --------------------------------------------------------------------------- */
+:root,
+[data-theme='gta'] {
+  /* paper = main reading surface */
+  --paper: #ebe2c8;
+  --paper-2: #e0d5b4;
+  --paper-3: #d3c69f;
+  --line: #b9ab85;
+  --ink: #161412;
+  --ink-2: #3b3630;
+  --ink-mute: #7a7060;
+  /* accent = the red */
+  --accent: #c42027;
+  --accent-dark: #961419;
+  --accent-ink: #f3ead3;
+  /* side = the dark sidebar / search box surface */
+  --side: #0f0e0d;
+  --side-2: #1a1816;
+  --side-3: #262320;
+  --side-line: #312d29;
+  --side-text: #ece3cb;
+  --side-dim: #c3b99f;
+  --side-mute: #6f6756;
+  /* stage = the area behind the panels */
+  --stage: #0b0a09;
+  --stage-text: #ece3cb;
+  --radius: 0px;
+  --font-display: 'Bowlby One', 'Impact', sans-serif;
+  --font-display-weight: 400;
+  --font-body: 'JetBrains Mono', ui-monospace, monospace;
+  --font-label: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+/* REGULAR = cyber-brutalist: pure black, 1px white rules, mono everything,
+   no colour at all — "accent" is simply white-on-black inverted. */
+[data-theme='regular'] {
+  --paper: #000000;
+  --paper-2: #0c0c0c;
+  --paper-3: #1a1a1a;
+  --line: #ffffff;
+  --ink: #ffffff;
+  --ink-2: #d9d9d9;
+  --ink-mute: #8c8c8c;
+  --accent: #ffffff;
+  --accent-dark: #d9d9d9;
+  --accent-ink: #000000;
+  --side: #000000;
+  --side-2: #0c0c0c;
+  --side-3: #1a1a1a;
+  --side-line: #ffffff;
+  --side-text: #ffffff;
+  --side-dim: #9a9a9a;
+  --side-mute: #5a5a5a;
+  --stage: #000000;
+  --stage-text: #ffffff;
+  --radius: 0px;
+  --font-display: 'Syncopate', 'Michroma', ui-sans-serif, sans-serif;
+  --font-display-weight: 700;
+  --font-body: 'JetBrains Mono', ui-monospace, monospace;
+  --font-label: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+@layer base {
+  html, body, #root {
+    height: 100%;
+  }
+  body {
+    margin: 0;
+    background: var(--stage);
+    color: var(--ink);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--line); }
+  ::-webkit-scrollbar-thumb:hover { background: var(--ink-mute); }
+  .side-scroll::-webkit-scrollbar-thumb { background: var(--side-line); }
+  .side-scroll::-webkit-scrollbar-thumb:hover { background: var(--side-mute); }
+  /* White rules are the brutalist skin's whole language; the scrollbar
+     shouldn't compete with them. */
+  [data-theme='regular'] ::-webkit-scrollbar-thumb { background: var(--ink-mute); }
+  [data-theme='regular'] .side-scroll::-webkit-scrollbar-thumb { background: var(--side-mute); }
+  ::selection { background: var(--accent); color: var(--accent-ink); }
+}
+
+@layer components {
+  /* Armenian text MUST use this face — never a Latin display/mono stack. */
+  .font-arm {
+    font-family: 'Noto Sans Armenian', 'Noto Sans', sans-serif;
+  }
+  .font-arm-display {
+    font-family: 'Noto Sans Armenian', 'Noto Sans', sans-serif;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+  .font-display {
+    font-family: var(--font-display);
+    font-weight: var(--font-display-weight);
+  }
+  .font-black-letter {
+    font-family: 'UnifrakturMaguntia', 'Pirata One', serif;
+    font-weight: 400;
+  }
+  .font-body {
+    font-family: var(--font-body);
+  }
+  .font-label {
+    font-family: var(--font-label);
+  }
+  .rounded-theme {
+    border-radius: var(--radius);
+  }
+
+  /* Big outlined GTA numerals / wordmark. Regular theme turns them into plain
+     heavy type by resetting the stroke + shadow. */
+  .gta-outline {
+    color: var(--paper);
+    -webkit-text-stroke: 0.06em var(--ink);
+    paint-order: stroke fill;
+    text-shadow: 0.08em 0.08em 0 var(--ink);
+  }
+  .gta-wordmark {
+    color: #f1e8d1;
+    -webkit-text-stroke: 0.045em #0b0a09;
+    paint-order: stroke fill;
+    text-shadow: 0.07em 0.07em 0 #0b0a09, 0 0 18px rgba(0, 0, 0, 0.55);
+    letter-spacing: 0.01em;
+    line-height: 0.86;
+  }
+  .gta-subtitle {
+    color: #d8242c;
+    text-shadow: 0.05em 0.05em 0 #0b0a09, 0 0 14px rgba(0, 0, 0, 0.6);
+  }
+  /* REGULAR: solid white extended type, no stroke, no shadow. Syncopate is
+     very wide, so sizes step down relative to Bowlby. */
+  [data-theme='regular'] .gta-outline {
+    color: var(--ink);
+    -webkit-text-stroke: 0;
+    text-shadow: none;
+    letter-spacing: -0.02em;
+  }
+  [data-theme='regular'] .gta-wordmark {
+    color: var(--ink);
+    -webkit-text-stroke: 0;
+    text-shadow: none;
+    letter-spacing: 0.02em;
+    line-height: 1;
+  }
+  [data-theme='regular'] .font-display {
+    text-transform: uppercase;
+  }
+  [data-theme='regular'] .gta-subtitle {
+    color: var(--ink);
+    text-shadow: none;
+  }
+  /* Blackletter has no place in the brutalist skin: the subtitle becomes a
+     tracked-out mono caption instead. */
+  [data-theme='regular'] .font-black-letter {
+    font-family: var(--font-label);
+    font-weight: 700;
+    font-size: 9px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+  }
+  @media (min-width: 640px) {
+    [data-theme='regular'] .font-black-letter {
+      font-size: 11px;
+      letter-spacing: 0.32em;
+    }
+  }
+  @media (min-width: 1024px) {
+    [data-theme='regular'] .font-black-letter {
+      font-size: 13px;
+    }
+  }
+
+  /* "//LABEL_" captions, straight off the brutalist poster. */
+  [data-theme='regular'] .brut-label::before {
+    content: '//';
+    margin-right: 0.35em;
+    opacity: 0.6;
+  }
+  [data-theme='regular'] .brut-label::after {
+    content: '_';
+    opacity: 0.6;
+  }
+
+  /* The skyline. Only the GTA skin paints it; the stage behind it stays dark
+     so the panels float over the art with a slight vignette. */
+  .stage-art {
+    background-color: var(--stage);
+  }
+  [data-theme='gta'] .stage-art {
+    background-image:
+      linear-gradient(180deg, rgba(8, 6, 5, 0.08) 0%, rgba(8, 6, 5, 0.22) 45%, rgba(8, 6, 5, 0.55) 100%),
+      var(--stage-image);
+    background-size: cover;
+    background-position: center 28%;
+    background-attachment: fixed;
+  }
+  @media (max-width: 1023px) {
+    [data-theme='gta'] .stage-art {
+      background-attachment: scroll;
+      background-position: center top;
+    }
+  }
+  /* REGULAR stage: black with a faint blueprint grid. */
+  [data-theme='regular'] .stage-art {
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+
+  /* Clipped illustration in the article hero: the flag. */
+  .hero-art {
+    display: none;
+  }
+  [data-theme='gta'] .hero-art {
+    display: block;
+    background-image: var(--hero-image);
+    background-size: cover;
+    background-position: 68% 45%;
+    clip-path: polygon(22% 0, 100% 0, 100% 100%, 0 100%);
+    -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 38%);
+    mask-image: linear-gradient(90deg, transparent 0%, #000 38%);
+  }
+
+  /* REGULAR: the flag stays in full colour — the one splash of colour in
+     the brutalist skin — framed by a hard 1px rule instead of a diagonal cut. */
+  [data-theme='regular'] .hero-art {
+    display: block;
+    background-image: var(--hero-image);
+    background-size: cover;
+    background-position: 68% 45%;
+    border-left: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 30%);
+    mask-image: linear-gradient(90deg, transparent 0%, #000 30%);
+  }
+
+  /* Paper texture: a faint halftone so the cream reads as print, not flat UI. */
+  [data-theme='gta'] .paper-grain {
+    background-image:
+      radial-gradient(rgba(60, 40, 10, 0.045) 0.6px, transparent 0.7px);
+    background-size: 4px 4px;
+  }
+
+  /* -------------------------------------------------------------- motion --
+     Article open/close. Links navigate inside document.startViewTransition
+     (React Router `viewTransition`), so the old sheet fades out and the new
+     one fades in; the rest of the page swaps without animating. Browsers
+     without the API fall back to a keyed fade-in on the new sheet. Everything
+     is off under prefers-reduced-motion. */
+  @media (prefers-reduced-motion: no-preference) {
+    .sheet-vt {
+      view-transition-name: sheet;
+    }
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+      animation: none;
+    }
+    ::view-transition-old(sheet) {
+      animation: sheet-out 160ms ease-in both;
+    }
+    ::view-transition-new(sheet) {
+      animation: sheet-in 300ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    }
+    @supports not (view-transition-name: none) {
+      .sheet-enter {
+        animation: sheet-in 300ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+      }
+    }
+
+    /* Lit stars pop in with a stagger; a 5/5 verdict slams in oversized and
+       keeps glowing so the reader can't miss that it's dangerous. */
+    .star-lit {
+      animation: star-pop 320ms cubic-bezier(0.2, 1.2, 0.3, 1) both;
+    }
+    /* Slam, then exactly two glow pulses, then the glow is gone. */
+    .stars-danger .star-lit {
+      animation:
+        star-slam 620ms cubic-bezier(0.18, 1.5, 0.3, 1) both,
+        star-glow 1.4s ease-in-out 620ms 2 both;
+    }
+    .stars-danger .stars-label {
+      animation: label-glow 1.4s ease-in-out 620ms 2 both;
+    }
+
+    /* Hero search: once there's something typed, the arrow beckons. */
+    .arrow-nudge .arrow-icon {
+      animation: arrow-nudge 1.1s ease-in-out infinite;
+    }
+  }
+  @keyframes arrow-nudge {
+    0%, 100% { transform: translateX(-3px); }
+    50% { transform: translateX(4px); }
+  }
+  @keyframes sheet-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes sheet-out {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }
+  @keyframes star-pop {
+    from { opacity: 0; transform: scale(0.4); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  @keyframes star-slam {
+    0% { opacity: 0; transform: scale(2.6) rotate(-12deg); filter: drop-shadow(0 0 0 transparent); }
+    55% { opacity: 1; transform: scale(1.25) rotate(3deg); filter: drop-shadow(0 0 10px var(--accent)); }
+    100% { opacity: 1; transform: scale(1) rotate(0); filter: drop-shadow(0 0 0 transparent); }
+  }
+  @keyframes star-glow {
+    0%, 100% { filter: drop-shadow(0 0 0 transparent); transform: scale(1); }
+    50% { filter: drop-shadow(0 0 9px var(--accent)) drop-shadow(0 0 16px var(--accent)); transform: scale(1.12); }
+  }
+  @keyframes label-glow {
+    0%, 100% { text-shadow: 0 0 0 transparent; }
+    50% { text-shadow: 0 0 8px var(--accent); }
+  }
+
+  /* ------------------------------------------------------------ landing --
+     The idle title screen has no paper sheet: text sits straight on the
+     skyline, so it needs its own shadow; tiles and the hero search are the
+     only surfaces. */
+  .stage-copy {
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.85), 0 0 12px rgba(0, 0, 0, 0.6);
+  }
+  [data-theme='regular'] .stage-copy {
+    text-shadow: none;
+  }
+  .tile {
+    background: rgba(15, 14, 13, 0.86);
+    border: 2px solid var(--side-line);
+    backdrop-filter: blur(4px);
+  }
+  [data-theme='gta'] .tile {
+    box-shadow: 4px 4px 0 0 rgba(6, 5, 4, 0.75);
+  }
+  [data-theme='regular'] .tile {
+    background: rgba(0, 0, 0, 0.82);
+    border-width: 1px;
+  }
+  .hero-search {
+    background: var(--paper);
+    border: 2px solid #0b0a09;
+    box-shadow: 6px 6px 0 0 rgba(6, 5, 4, 0.75);
+  }
+  [data-theme='regular'] .hero-search {
+    border: 1px solid var(--line);
+    box-shadow: none;
+  }
+  /* REGULAR: the dithered skyline ghosts behind the title screen. */
+  [data-theme='regular'] .landing-stage {
+    background-image:
+      linear-gradient(90deg, rgba(0, 0, 0, 0.92) 0%, rgba(0, 0, 0, 0.55) 55%, rgba(0, 0, 0, 0.35) 100%),
+      var(--stage-image-dither);
+    background-size: cover;
+    background-position: 60% 50%;
+  }
+
+  /* Frame around the floating panels. */
+  .panel-frame {
+    border: 2px solid #0b0a09;
+  }
+  [data-theme='regular'] .panel-frame {
+    border: 1px solid var(--line);
+  }
+
+  /* Hard offset shadow on small controls (GTA only). */
+  [data-theme='gta'] .hard-shadow {
+    box-shadow: 3px 3px 0 0 rgba(6, 5, 4, 0.7);
+  }
+
+  /* Hard offset shadow used on floating panels in GTA mode. */
+  [data-theme='gta'] .panel-shadow {
+    box-shadow: 6px 6px 0 0 rgba(6, 5, 4, 0.75);
+  }
+  [data-theme='regular'] .panel-shadow {
+    box-shadow: none;
+  }
+}
